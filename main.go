@@ -32,9 +32,9 @@ func main() {
 				break
 			} else if err != nil {
 				panic(err)
-			} else {
-				ch <- r
 			}
+
+			ch <- r
 		}
 
 		close(ch)
@@ -72,11 +72,11 @@ func main() {
 
 		case CR:
 			if r := <-ch; r != LF {
-				fmt.Fprintf(os.Stdout, "%c", r)
+				_, _ = fmt.Fprintf(os.Stdout, "%c", r)
 			}
 
 		default:
-			fmt.Fprintf(os.Stdout, "%c", r)
+			_, _ = fmt.Fprintf(os.Stdout, "%c", r)
 		}
 	}
 }

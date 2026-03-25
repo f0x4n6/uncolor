@@ -8,9 +8,6 @@
 *.so
 *.dylib
 
-# Mac crap
-.DS_Store
-
 # Test binary, built with `go test -c`
 *.test
 
@@ -29,3 +26,5 @@ go.work.sum
 
 # MacOS crap
 .DS_Store
+
+.idea/

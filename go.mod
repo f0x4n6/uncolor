@@ -1,3 +1,3 @@
-module github.com/cuhsat/uncolor
+module github.com/f0x4n6/uncolor
 
-go 1.24
+go 1.26
