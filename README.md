@@ -1,13 +1,13 @@
-# uncolor
+# discolor
 Remove ANSI color escape sequences from the input stream.
 
 ```console
-go install go.foxforensics.dev/uncolor@latest
+go install go.foxforensics.dev/discolor@latest
 ```
 
 ## Usage
 ```console
-$ cat test.txt | uncolor
+$ cat test.txt | discolor
 ```
 
 ## License

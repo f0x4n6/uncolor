@@ -2,81 +2,79 @@
 //
 // Usage:
 //
-//	cat FILE | uncolor
+//	cat FILE | discolor
 package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 )
 
 const (
-	BEL = 7
-	LF  = 10
-	CR  = 13
-	ESC = 27
+	BEL = 0x07
+	LF  = 0x0A
+	CR  = 0x0D
+	ESC = 0x1B
 )
+
+func read(ch chan<- rune) {
+	defer close(ch)
+
+	r := bufio.NewReader(os.Stdin)
+
+	for {
+		c, _, err := r.ReadRune()
+
+		if errors.Is(err, io.EOF) {
+			break
+		} else if err != nil {
+			log.Fatal(err)
+		}
+
+		ch <- c
+	}
+}
 
 func main() {
 	ch := make(chan rune)
 
-	go func(ch chan<- rune) {
-		br := bufio.NewReader(os.Stdin)
+	go read(ch)
 
-		for {
-			r, _, err := br.ReadRune()
-
-			if err == io.EOF {
-				break
-			} else if err != nil {
-				panic(err)
-			}
-
-			ch <- r
-		}
-
-		close(ch)
-	}(ch)
-
-	for r := range ch {
-		switch r {
+	for c := range ch {
+		switch c {
 		case ESC:
-			switch r = <-ch; r {
+			switch c = <-ch; c {
 			case '[':
-				for r := range ch {
-					if r != ';' && r != '?' && (r < '0' || r > '9') {
+				for c := range ch {
+					if c != ';' && c != '?' && (c < '0' || c > '9') {
 						break
 					}
 				}
-
 			case ']':
-				if r = <-ch; r >= 0 && r <= '9' {
-					for r := range ch {
-						switch r {
-
+				if c = <-ch; c >= 0 && c <= '9' {
+					for c := range ch {
+						switch c {
 						case BEL:
 							break
-
 						case ESC:
 							<-ch
 							break
 						}
 					}
 				}
-
 			case '(', ')', '%':
 				<-ch
 			}
-
 		case CR:
-			if r := <-ch; r != LF {
-				_, _ = fmt.Fprintf(os.Stdout, "%c", r)
+			if c := <-ch; c != LF {
+				_, _ = fmt.Printf("%c", c)
 			}
-
 		default:
-			_, _ = fmt.Fprintf(os.Stdout, "%c", r)
+			_, _ = fmt.Printf("%c", c)
 		}
 	}
 }
